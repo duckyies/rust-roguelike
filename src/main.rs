@@ -1,12 +1,22 @@
 use quicksilver::{
-    geom::Vector,
-    lifecycle::{run, Settings, State, Window},
-    Result,
+    geom::{Shape, Vector},
+    graphics::{Background::Img, Color, Font, FontStyle, Image},
+    lifecycle::{run, Asset, Settings, State, Window},
+    Future, Result,
 };
-struct Game;
+struct Game {
+    title: Asset<Image>,
+}
+
 impl State for Game {
     fn new() -> Result<Self> {
-        Ok(Self)
+        let font_mononoki = "mononoki-Regular.ttf";
+
+        let title = Asset::new(Font::load(font_mononoki).and_then(|font| -> Result<Image> {
+            font.render("ASCII Roguelike", &FontStyle::new(72.0, Color::BLACK))
+        }));
+
+        Ok(Self {title})
     }
 
     fn update(&mut self, _window: &mut Window) -> Result<()> {
@@ -14,6 +24,19 @@ impl State for Game {
     }
 
     fn draw(&mut self, window: &mut Window) -> Result<()> {
+
+        window.clear(Color::WHITE)?;
+
+        self.title.execute(|image| {
+            window.draw(
+                &image
+                    .area()
+                    .with_center((window.screen_size().x as i32 / 2, 40)),
+                Img(&image),
+            );
+            Ok(())
+        })?;
+
         Ok(())
     }
 
