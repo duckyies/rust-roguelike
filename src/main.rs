@@ -8,6 +8,13 @@ struct Game {
     title: Asset<Image>,
 }
 
+#[derive(Clone, PartialEq, Debug)]
+struct Tile {
+    pos: Vector,
+    glyph: char,
+    color: Color
+}
+
 impl State for Game {
     fn new() -> Result<Self> {
         let font_mononoki = "mononoki-Regular.ttf";
@@ -44,6 +51,7 @@ impl State for Game {
 
 fn main() {
     let settings = Settings {
+        scale: quicksilver::graphics::ImageScaleStrategy::Blur,
         ..Default::default()
     };
     run::<Game>("Quicksilver Roguelike", Vector::new(800, 600), settings);
