@@ -7,6 +7,9 @@ use quicksilver::{
 };
 
 use std::collections::HashMap;
+use quicksilver::input::Key;
+use quicksilver::prelude::Col;
+
 struct Game {
     title: Asset<Image>,
     map_size: Vector,
@@ -85,7 +88,22 @@ impl State for Game {
         })
     }
 
-    fn update(&mut self, _window: &mut Window) -> Result<()> {
+    fn update(&mut self, window: &mut Window) -> Result<()> {
+        use quicksilver::input::ButtonState::*;
+
+        let player = &mut self.entities[self.player_id];
+        if window.keyboard()[Key::Left] == Pressed || window.keyboard()[Key::A] == Pressed {
+            player.pos.x -= 1.0;
+        }
+        if window.keyboard()[Key::Right] == Pressed || window.keyboard()[Key::D] == Pressed {
+            player.pos.x += 1.0;
+        }
+        if window.keyboard()[Key::Up] == Pressed || window.keyboard()[Key::W] == Pressed {
+            player.pos.y -= 1.0;
+        }
+        if window.keyboard()[Key::Down] == Pressed || window.keyboard()[Key::S] == Pressed {
+            player.pos.y += 1.0;
+        }
         Ok(())
     }
 
@@ -133,6 +151,24 @@ impl State for Game {
             Ok(())
 
         })?;
+
+
+        let player = &self.entities[self.player_id];
+        let full_health_width_px = 100.0;
+        let current_health_width_px = (player.hp as f32 / player.max_hp as f32) * full_health_width_px;
+
+        let map_size_px = self.map_size.times(tile_size_px);
+        let health_bar_pos_px = offset_px + Vector::new(map_size_px.x, 0.0);
+
+        window.draw(
+            &Rectangle::new(health_bar_pos_px, (full_health_width_px, tile_size_px.y)),
+            Col(Color::RED.with_alpha(0.5)),
+        );
+
+        window.draw(
+            &Rectangle::new(health_bar_pos_px, (current_health_width_px, tile_size_px.y)),
+            Col(Color::RED),
+        );
 
         Ok(())
     }
