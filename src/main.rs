@@ -128,6 +128,17 @@ impl State for Game {
 
         tileset.execute(|tileset| {
 
+
+            for entity in entities.iter() {
+                if let Some(image) = tileset.get(&entity.glyph) {
+                    let pos_px = offset_px + entity.pos.times(tile_size_px);
+                    window.draw(
+                        &Rectangle::new(pos_px, image.area().size()),
+                        Blended(&image, entity.color),
+                    );
+                }
+            }
+
             for tile in map.iter() {
                 if let Some(image) = tileset.get(&tile.glyph) {
                     let pos = tile.pos.times(tile_size_px);
@@ -139,15 +150,6 @@ impl State for Game {
                 }
             }
 
-            for entity in entities.iter() {
-                if let Some(image) = tileset.get(&entity.glyph) {
-                    let pos_px = offset_px + entity.pos.times(tile_size_px);
-                    window.draw(
-                        &Rectangle::new(pos_px, image.area().size()),
-                        Blended(&image, entity.color),
-                    );
-                }
-            }
             Ok(())
 
         })?;
